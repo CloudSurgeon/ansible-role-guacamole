@@ -5,7 +5,7 @@
 - name: Define gcc_version.
   set_fact:
     gcc_version: "{{ __gcc_version}}"
-- name: Define gcc_version.
+- name: Define __guacamole_apt_install.
   set_fact:
     guacamole_apt_install: "{{ __guacamole_apt_install | list }}"
   when: guacamole_apt_install is not defined
