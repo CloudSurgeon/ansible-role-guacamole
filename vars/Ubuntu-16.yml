@@ -1,0 +1,27 @@
+---
+### Compliler version to use (some known issues with gcc7)
+__gcc_version: gcc-6
+
+### Packages to install (linpng12-dev was abandoned after 16.04)
+__guacamole_apt_install:
+  - tomcat8
+  - libcairo2-dev
+  - libjpeg-turbo8-dev
+  - libpng12-dev
+  - libossp-uuid-dev
+  - libavcodec-dev
+  - libavutil-dev
+  - libswscale-dev
+  - libfreerdp-dev
+  - libpango1.0-dev
+  - libssh2-1-dev
+  - libtelnet-dev
+  - libvncserver-dev
+  - libpulse-dev
+  - libssl-dev
+  - libvorbis-dev
+  - libwebp-dev
+  - "{{ gcc_version }}"
+  - git
+  - mariadb-server
+  - python-mysqldb

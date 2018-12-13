@@ -1,4 +1,14 @@
 ---
+- name: Include version-specific variables for Ubuntu.
+  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+  when: ansible_distribution == 'Ubuntu'
+- name: Define gcc_version.
+  set_fact:
+    gcc_version: "{{ __gcc_version}}"
+- name: Define gcc_version.
+  set_fact:
+    guacamole_apt_install: "{{ __guacamole_apt_install | list }}"
+  when: guacamole_apt_install is not defined
 - import_tasks: install_packages.yml
 - import_tasks: install_guacamole_server.yml
 - import_tasks: install_guacamole_client.yml

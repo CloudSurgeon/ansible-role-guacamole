@@ -1,6 +1,7 @@
 ---
-### Compliler version to use (some known issues with gcc7)
-gcc_version: gcc-6
+### Set gcc_version if you would like to use a different version than
+### the default (gcc-6)
+#gcc_version: ""
 
 ### Guacamole Settings
 guacamole_version: 0.9.13-incubating
@@ -11,26 +12,6 @@ guacamole_db_name: guacamole_db
 ### Mysql settings (mysql java client)
 mysql_java_client_version: 5.1.44
 
-### Packages to install
-guacamole_apt_install:
-  - tomcat8
-  - libcairo2-dev
-  - libjpeg-turbo8-dev
-  - libpng12-dev
-  - libossp-uuid-dev
-  - libavcodec-dev
-  - libavutil-dev
-  - libswscale-dev
-  - libfreerdp-dev
-  - libpango1.0-dev
-  - libssh2-1-dev
-  - libtelnet-dev
-  - libvncserver-dev
-  - libpulse-dev
-  - libssl-dev
-  - libvorbis-dev
-  - libwebp-dev
-  - "{{ gcc_version }}"
-  - git
-  - mariadb-server
-  - python-mysqldb
+### Set guacamole_apt_install if you would like to use a different version than
+### the default
+#guacamole_apt_install: {}
