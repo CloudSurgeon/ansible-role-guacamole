@@ -16,8 +16,11 @@
     name: "{{ guacamole_db_user }}"
     password: "{{ guacamole_db_password }}"
     priv: '{{ guacamole_db_name }}.*:SELECT,INSERT,UPDATE,DELETE'
-    host: localhost
+    host: "{{ item }}"
     state: present
+  with_items:
+    - localhost
+    - 127.0.0.1
   become:  true
 - name: Importing guacamole schema
   mysql_db:
