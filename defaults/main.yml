@@ -1,4 +1,7 @@
 ---
+### Compliler version to use (some known issues with gcc7)
+gcc_version: gcc-6
+
 ### Guacamole Settings
 guacamole_version: 0.9.13-incubating
 guacamole_db_user: guacamole
@@ -27,7 +30,7 @@ guacamole_apt_install:
   - libssl-dev
   - libvorbis-dev
   - libwebp-dev
-  - gcc
+  - "{{ gcc_version }}"
   - git
   - mariadb-server
   - python-mysqldb

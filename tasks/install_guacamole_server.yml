@@ -17,6 +17,8 @@
 - name: Making guacamole-server (This will take some time)
   make:
     chdir: /tmp/guacamole-server-{{ guacamole_version }}/
+    params:
+        CC: "{{ gcc_version }}"
   become: true
   changed_when: false
 - name: Make install guacamole-server
