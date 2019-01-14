@@ -1,8 +1,14 @@
 ---
-- name: Retrieving guacamole-server-{{ guacamole_version }}.tar.gz
+- name: Retrieving guacamole-server-{{ guacamole_version }}.tar.gz (if >= 1.0.0)
   get_url:
-    url: http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz
+    url: "http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz"
     dest: /tmp/
+  when: "guacamole_version is version('1.0.0', '>=')"
+- name: Retrieving guacamole-server-{{ guacamole_version }}.tar.gz (if < 1.0.0)
+  get_url:
+    url: "http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz"
+    dest: /tmp/
+  when: "guacamole_version is version('1.0.0', '<')"
 - name: Unarchiving guacamole-server-{{ guacamole_version }}.tar.gz
   unarchive:
     src: /tmp/guacamole-server-{{ guacamole_version }}.tar.gz
