@@ -2,11 +2,11 @@
 - name: Retrieving guacamole-{{ guacamole_version }}.war (if >= 1.0.0)
   get_url:
     url: "http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/{{ guacamole_version }}/binary/guacamole-{{ guacamole_version }}.war"
-    dest: /var/lib/tomcat8/webapps/guacamole.war
+    dest: "/var/lib/tomcat8/webapps/{{ guacamole_app_name }}.war"
   become: true
   when: "guacamole_version is version('1.0.0', '>=')"
 - name: Retrieving guacamole-{{ guacamole_version }}.war (if < 1.0.0)
   get_url:
     url: "http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/binary/guacamole-{{ guacamole_version }}.war"
-    dest: /var/lib/tomcat8/webapps/guacamole.war
+    dest: "/var/lib/tomcat8/webapps/{{ guacamole_app_name }}.war"
   when: "guacamole_version is version('1.0.0', '<')"
