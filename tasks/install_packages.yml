@@ -3,11 +3,19 @@
   apt:
     name: aptitude
   become: 'true'
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
 - name: Updating apt repos
   apt:
     update_cache: 'yes'
   become: 'true'
   changed_when: false
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
 - name: Fix for https://github.com/debuerreotype/debuerreotype/issues/10
   file:
     path: /usr/share/man/man1
@@ -16,3 +24,7 @@
 - name: Installing required packages
   action: apt pkg="{{ guacamole_apt_install }}" state=present
   become: 'true'
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2

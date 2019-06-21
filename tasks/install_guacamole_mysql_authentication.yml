@@ -20,6 +20,10 @@
     url: https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-{{ mysql_java_client_version }}.tar.gz
     dest: /tmp/
   become: true
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
 - name: Unarchiving mysql-connector-java-{{ mysql_java_client_version }}.tar.gz
   unarchive:
     src: /tmp/mysql-connector-java-{{ mysql_java_client_version }}.tar.gz
@@ -40,11 +44,19 @@
   get_url:
     url: http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/{{ guacamole_version }}/binary/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz
     dest: /tmp/
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
   when: "guacamole_version is version('1.0.0', '>=')"
 - name: Retrieving guacamole-auth-jdbc-{{ guacamole_version }} (if < 1.0.0)
   get_url:
     url: http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/binary/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz
     dest: /tmp/
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
   when: "guacamole_version is version('1.0.0', '<')"
 - name: Unarchiving guacamole-auth-jdbc-{{ guacamole_version }}
   unarchive:
