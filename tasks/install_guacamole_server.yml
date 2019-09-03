@@ -7,7 +7,9 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '>=')"
+  when:
+    - guacamole_version != "master"
+    - "guacamole_version is version('1.0.0', '>=')"
 - name: Retrieving guacamole-server-{{ guacamole_version }}.tar.gz (if < 1.0.0)
   get_url:
     url: "http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/source/guacamole-server-{{ guacamole_version }}.tar.gz"
@@ -16,12 +18,30 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '<')"
+  when:
+    - guacamole_version != "master" 
+    - "guacamole_version is version('1.0.0', '<')"
+- name: Retrieving master code base if guacamole_version == master
+  get_url:
+    url: "https://github.com/apache/guacamole-server/archive/master.tar.gz"
+    dest: "/tmp/guacamole-server-{{ guacamole_version }}.tar.gz"
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+  when: guacamole_version == "master"
 - name: Unarchiving guacamole-server-{{ guacamole_version }}.tar.gz
   unarchive:
     src: /tmp/guacamole-server-{{ guacamole_version }}.tar.gz
     dest: /tmp/
     copy: no
+- name: Running autoreconf -fi if compiling from master
+  shell: autoreconf -fi
+  args:
+    chdir: /tmp/guacamole-server-{{ guacamole_version }}
+  become: true
+  changed_when: false
+  when: guacamole_version == "master"
 - name: Running guacamole configure script
   shell: ./configure --with-init-dir=/etc/init.d
   args:

@@ -22,18 +22,26 @@
     - localhost
     - 127.0.0.1
   become:  true
+- name: Find schema scripts
+  find:
+    paths: 
+      - /tmp/guacamole-auth-jdbc-{{ guacamole_version }}/mysql
+      - /tmp/guacamole-client-{{ guacamole_version }}/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql
+    patterns: 'schema'
+    file_type: directory
+  register: schema_dir
 - name: Importing guacamole schema
   mysql_db:
     state: import
     name: "{{ guacamole_db_name }}"
-    target: /tmp/guacamole-auth-jdbc-{{ guacamole_version }}/mysql/schema/001-create-schema.sql
+    target: "{{ schema_dir.files[0].path }}/001-create-schema.sql"
   become: true
-  when: database_status.stdout == ""
+  when: database_status.stdout == "" 
 - name: Importing guacamole user 'guacadmin'
   mysql_db:
     state: import
     name: "{{ guacamole_db_name }}"
-    target: /tmp/guacamole-auth-jdbc-{{ guacamole_version }}/mysql/schema/002-create-admin-user.sql
+    target: "{{ schema_dir.files[0].path }}/002-create-admin-user.sql"
   become: true
   when: database_status.stdout == ""
 - name: Creating guacamole.properties file

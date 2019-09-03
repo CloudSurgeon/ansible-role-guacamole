@@ -48,7 +48,9 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '>=')"
+  when: 
+    - guacamole_version != "master" 
+    - "guacamole_version is version('1.0.0', '>=')"
 - name: Retrieving guacamole-auth-jdbc-{{ guacamole_version }} (if < 1.0.0)
   get_url:
     url: http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/binary/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz
@@ -57,15 +59,25 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '<')"
+  when: 
+    - guacamole_version != "master" 
+    - "guacamole_version is version('1.0.0', '<')"
 - name: Unarchiving guacamole-auth-jdbc-{{ guacamole_version }}
   unarchive:
     src: /tmp/guacamole-auth-jdbc-{{ guacamole_version }}.tar.gz
     dest: /tmp/
     copy: no
-- name: Copying guacamole-auth-jdbc-mysql-{{ guacamole_version }}.jar
+  when: guacamole_version != "master"
+- name: Find /guacamole-auth-jdbc-mysql jar
+  find:
+    paths:
+      - /tmp/guacamole-auth-jdbc-{{ guacamole_version }}/mysql
+      - /tmp/guacamole-client-{{ guacamole_version }}/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/target/
+    patterns: 'guacamole-auth-jdbc-mysql-*.jar'
+  register: guacamole_jar
+- name: Copying "{{ guacamole_jar.files[0].path }}"
   copy:
-    src: /tmp/guacamole-auth-jdbc-{{ guacamole_version }}/mysql/guacamole-auth-jdbc-mysql-{{ guacamole_version }}.jar
+    src: "{{ guacamole_jar.files[0].path }}"
     dest: /etc/guacamole/extensions/
     remote_src: yes
   become: true

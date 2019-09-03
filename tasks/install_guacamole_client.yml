@@ -8,7 +8,9 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '>=')"
+  when:
+    - guacamole_version != "master"  
+    - "guacamole_version is version('1.0.0', '>=')"
 - name: Retrieving guacamole-{{ guacamole_version }}.war (if < 1.0.0)
   get_url:
     url: "http://archive.apache.org/dist/guacamole/{{ guacamole_version }}/binary/guacamole-{{ guacamole_version }}.war"
@@ -17,4 +19,46 @@
   until: task_result is success
   retries: 3
   delay: 2
-  when: "guacamole_version is version('1.0.0', '<')"
+  when: 
+    - guacamole_version != "master" 
+    - "guacamole_version is version('1.0.0', '<')"
+- name: Retrieving master code base if guacamole_version == master
+  get_url:
+    url: "https://github.com/apache/guacamole-client/archive/master.tar.gz"
+    dest: "/tmp/guacamole-client-{{ guacamole_version }}.tar.gz"
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+  when: guacamole_version == "master"
+- name: Unarchiving guacamole-client-{{ guacamole_version }}.tar.gz
+  unarchive:
+    src: /tmp/guacamole-client-{{ guacamole_version }}.tar.gz
+    dest: /tmp/
+    copy: no
+  when: guacamole_version == "master"
+- name: Build with Maven
+  shell: mvn package
+  args:
+    chdir: /tmp/guacamole-client-{{ guacamole_version }}
+  become: true
+  environment:
+    JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+  changed_when: false
+  when: guacamole_version == "master"
+- name: Find guacamole.war
+  find:
+    paths: /tmp/guacamole-client-{{ guacamole_version }}/guacamole/target
+    patterns: '*.war'
+  register: guacamole_war
+  when: guacamole_version == "master"
+  tags:
+    - copy
+- name: Copying guacamole.war
+  copy:
+    src: "{{ guacamole_war.files[0].path }}"
+    dest: /var/lib/tomcat8/webapps/{{ guacamole_app_name }}.war
+    remote_src: yes
+  when: guacamole_version == "master"
+  tags:
+    - copy

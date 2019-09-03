@@ -21,6 +21,10 @@
     path: /usr/share/man/man1
     state: directory
     mode: 0755
+- name: Add maven and jdk8 if guacamole_version == master
+  set_fact: 
+    guacamole_apt_install: "{{ guacamole_apt_install + [ 'maven', 'openjdk-8-jdk' ] }}"
+  when: guacamole_version == "master"
 - name: Installing required packages
   action: apt pkg="{{ guacamole_apt_install }}" state=present
   become: 'true'
